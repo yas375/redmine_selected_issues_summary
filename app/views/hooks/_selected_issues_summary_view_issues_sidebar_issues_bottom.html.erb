@@ -1,0 +1,27 @@
+<script type="text/javascript">
+  document.observe("dom:loaded", function() {
+      var estimated_hours = 0;
+
+      var count_all = function(){
+	var estimated_hours = 0;
+        var a = $$('tr.context-menu-selection .estimated_hours');
+        for (var i=0; i < a.length; i++) {
+          if (a[i].innerHTML != '') {
+          estimated_hours += parseFloat(a[i].innerHTML);
+        }
+      }
+      estimated_hours = Math.round(estimated_hours*100)/100;
+      $('estimated_time_value').update(estimated_hours);
+      $('selected_issue_summary_time').show();
+    };
+    $$('table.issues thead tr th:nth-child(1) a')[0].observe('click', count_all);
+  });
+
+  // update
+</script>
+
+<div id="selected_issue_summary_time">
+  <%= t(:field_estimated_hours) %>:  <span id="estimated_time_value">0</span>
+</div>
+
+
