@@ -2,8 +2,7 @@
   document.observe("dom:loaded", function() {
     var estimated_hours = 0;
 
-    var update_selected_issue_stat = function(estimated) {
-      var selected_issues = $$('tr.context-menu-selection').length;
+    var update_selected_issue_stat = function(estimated, selected_issues) {
       if (selected_issues > 0) {
         if (estimated > 0) {
           $('estimated_time_value').update(estimated);
@@ -22,7 +21,8 @@
     }
 
     var count_all = function(){
-      var estimated_hours = 0;
+      estimated_hours = 0;
+      var selected_issues = $$("tr.context-menu-selection").length;
       var a = $$('tr.context-menu-selection .estimated_hours');
       for (var i=0; i < a.length; i++) {
         if (a[i].innerHTML != '') {
@@ -30,9 +30,52 @@
         }
       }
       estimated_hours = Math.round(estimated_hours*100)/100;
-      update_selected_issue_stat(estimated_hours);
+      update_selected_issue_stat(estimated_hours, selected_issues);
     };
-    $$('table.issues thead tr th:nth-child(1) a')[0].observe('click', count_all);
+
+    var set_current = function(event){
+      console.log('qqasd');
+      var tr = event.target.findChildElements('estimated_hours');
+      console.log(tr);
+      if (tr.innerHTML != '') {
+        estimated_hours += parseFloat(tr.innerHTML);
+      }
+      console.log('asd');
+      console.log(event.target.hasClassName('context-menu-selection'));
+      update_selected_issue_stat(estimated_hours,0);
+    };
+
+    var check_all = $$('table.issues thead tr th:nth-child(1) a')[0];
+    check_all.observe('click', count_all);
+
+    var reset_counter = function(event){
+      if (event.target.up() == check_all) {
+        return;
+      }
+      var parents = event.target.ancestors();
+  //    console.log(parents);
+      for (var i=0; i<parents.length; i++) {
+//        console.log(i);
+        if(parents[i].hasClassName('hascontextmenu')) {
+          // select current
+          var tr = parents[i].down('.estimated_hours');
+          if (tr.innerHTML != '') {
+            estimated_hours = parseFloat(tr.innerHTML);
+          }
+          else {
+            estimated_hours = 0;
+          }
+          update_selected_issue_stat(estimated_hours,1);
+          return;
+        }
+      }
+      estimated_hours = 0;
+      update_selected_issue_stat(estimated_hours,0);
+    };
+
+    document.body.observe('click', reset_counter);
+    var issues_table = $$('table.issues');
+//    issues_table.observe('click', set_current);
   });
 </script>
 
