@@ -1,6 +1,8 @@
 <script type="text/javascript">
   document.observe("dom:loaded", function() {
     var estimated_hours = 0;
+    var check_all = $$('table.issues thead tr th:nth-child(1) a img')[0];
+    var issues_table = $$('table.issues');
 
     var update_selected_issue_stat = function(estimated, selected_issues) {
       if (selected_issues > 0) {
@@ -20,62 +22,55 @@
       }
     }
 
-    var count_all = function(){
-      estimated_hours = 0;
-      var selected_issues = $$("tr.context-menu-selection").length;
-      var a = $$('tr.context-menu-selection .estimated_hours');
-      for (var i=0; i < a.length; i++) {
-        if (a[i].innerHTML != '') {
-          estimated_hours += parseFloat(a[i].innerHTML);
+    var time_counter = function(event){
+      console.log(event.target)
+      if (event.target == check_all) {
+        estimated_hours = 0;
+        var selected_issues = $$("tr.context-menu-selection").length;
+        console.log(selected_issues)
+        var a = $$('tr.context-menu-selection .estimated_hours');
+        for (var i=0; i < a.length; i++) {
+          if (a[i].innerHTML != '') {
+            estimated_hours += parseFloat(a[i].innerHTML);
+          }
         }
-      }
-      estimated_hours = Math.round(estimated_hours*100)/100;
-      update_selected_issue_stat(estimated_hours, selected_issues);
-    };
-
-    var set_current = function(event){
-      console.log('qqasd');
-      var tr = event.target.findChildElements('estimated_hours');
-      console.log(tr);
-      if (tr.innerHTML != '') {
-        estimated_hours += parseFloat(tr.innerHTML);
-      }
-      console.log('asd');
-      console.log(event.target.hasClassName('context-menu-selection'));
-      update_selected_issue_stat(estimated_hours,0);
-    };
-
-    var check_all = $$('table.issues thead tr th:nth-child(1) a')[0];
-    check_all.observe('click', count_all);
-
-    var reset_counter = function(event){
-      if (event.target.up() == check_all) {
-        return;
-      }
-      var parents = event.target.ancestors();
-  //    console.log(parents);
+        estimated_hours = Math.round(estimated_hours*100)/100;
+        update_selected_issue_stat(estimated_hours, selected_issues);
+      } else {
+        var parents = event.target.ancestors();
+        var some_flag = false;
       for (var i=0; i<parents.length; i++) {
-//        console.log(i);
+        console.log(i);
         if(parents[i].hasClassName('hascontextmenu')) {
-          // select current
-          var tr = parents[i].down('.estimated_hours');
-          if (tr.innerHTML != '') {
-            estimated_hours = parseFloat(tr.innerHTML);
-          }
+          some_flag = true;
+          break;
+        }
+        if (flag) {
+          if (ctrl || checkbox) {
+
+          } 
           else {
-            estimated_hours = 0;
+            // select current
+            // проверить, что такой элемент есть, а то кононки со временем может и не быть
+            var tr = parents[i].down('.estimated_hours');
+            if (tr.innerHTML != '') {
+              estimated_hours = parseFloat(tr.innerHTML);
+            }
+            else {
+              estimated_hours = 0;
+            }
+            update_selected_issue_stat(estimated_hours,1);
           }
-          update_selected_issue_stat(estimated_hours,1);
-          return;
+        } 
+        else {
+          estimated_hours = 0;
+          update_selected_issue_stat(estimated_hours,0);
         }
       }
-      estimated_hours = 0;
-      update_selected_issue_stat(estimated_hours,0);
+      }
     };
 
-    document.body.observe('click', reset_counter);
-    var issues_table = $$('table.issues');
-//    issues_table.observe('click', set_current);
+    document.body.observe('click', time_counter);
   });
 </script>
 
