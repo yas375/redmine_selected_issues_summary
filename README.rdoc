@@ -1,3 +1,20 @@
-= selected_issues_summary
+= Redmine Selected Issues Summary
 
-На странице со списком тасков когда выбираешь галочками какие-то таски, то этот плагин выводит справа блок с суммарной оценкой времени по этим таскам.
+Selected Issues Summary plugin give possibility to view total estimated time of all selected tasks.
+
+== Features
+
+* Count number of selected issues
+* Count total estimated_time for selected issues
+
+== Getting the plugin
+
+A copy of the plugin can be downloaded from {GitHub}[http://github.com/yas375/redmine_selected_issues_summary]
+
+== Installation and Setup
+
+Follow the Redmine plugin installation steps at http://www.redmine.org/wiki/redmine/Plugins
+
+== Project help
+
+If you need help you can contact the maintainer at the Bug Tracker.  The bug tracker is located at http://github.com/yas375/redmine_selected_issues_summary/issues
