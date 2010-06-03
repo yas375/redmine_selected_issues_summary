@@ -1,11 +1,13 @@
 <script type="text/javascript">
   document.observe("dom:loaded", function() {
     var estimated_hours = 0;
+    var selected_issues = 0;
     var check_all = $$('table.issues thead tr th:nth-child(1) a img')[0];
     var issues_table = $$('table.issues');
 
     var update_selected_issue_stat = function(estimated, selected_issues) {
       if (selected_issues > 0) {
+        estimated = Math.round(estimated_hours*100)/100;
         if (estimated > 0) {
           $('estimated_time_value').update(estimated);
           $('total_estimated_time').show();
@@ -22,55 +24,65 @@
       }
     }
 
-    var time_counter = function(event){
+    var estimated_time_or_null = function(tr) {
+      var td = tr.down('.estimated_hours');
+      if (td && td.innerHTML != '') {
+        return parseFloat(td.innerHTML);
+      }
+      return 0;
+    }
+
+    var recount_time = function(event) {
       console.log(event.target)
       if (event.target == check_all) {
+        selected_issues = $$("tr.context-menu-selection").length;
         estimated_hours = 0;
-        var selected_issues = $$("tr.context-menu-selection").length;
-        console.log(selected_issues)
         var a = $$('tr.context-menu-selection .estimated_hours');
         for (var i=0; i < a.length; i++) {
           if (a[i].innerHTML != '') {
             estimated_hours += parseFloat(a[i].innerHTML);
           }
         }
-        estimated_hours = Math.round(estimated_hours*100)/100;
-        update_selected_issue_stat(estimated_hours, selected_issues);
-      } else {
+      }
+      else {
         var parents = event.target.ancestors();
-        var some_flag = false;
-      for (var i=0; i<parents.length; i++) {
-        console.log(i);
-        if(parents[i].hasClassName('hascontextmenu')) {
-          some_flag = true;
-          break;
-        }
-        if (flag) {
-          if (ctrl || checkbox) {
-
-          } 
-          else {
-            // select current
-            // проверить, что такой элемент есть, а то кононки со временем может и не быть
-            var tr = parents[i].down('.estimated_hours');
-            if (tr.innerHTML != '') {
-              estimated_hours = parseFloat(tr.innerHTML);
-            }
-            else {
-              estimated_hours = 0;
-            }
-            update_selected_issue_stat(estimated_hours,1);
+        var click_was_on_tr = false;
+        for (var i=0; i<parents.length; i++) {
+          if(parents[i].hasClassName('hascontextmenu')) {
+            click_was_on_tr = true;
+            break;
           }
-        } 
+        }
+
+        if (click_was_on_tr) {
+          // if (ctrl || checkbox) {
+          if (event.target.type == 'checkbox') {
+            // проверяем выделен ли сейчас этот tr
+            var tr = event.target.up().up();
+            var this_est_time = estimated_time_or_null(tr);
+            if (tr.hasClassName('context-menu-selection')) { // значит сняли выделение
+              estimated_hours -= this_est_time;
+              selected_issues--;
+            }
+            else { // выделили
+              estimated_hours += this_est_time;
+              selected_issues++;
+            }
+          }
+          else { // select current
+            selected_issues = 1;
+            estimated_hours = estimated_time_or_null(parents[i]);
+          }
+        }
         else {
           estimated_hours = 0;
-          update_selected_issue_stat(estimated_hours,0);
+          selected_issues = 0;
         }
       }
-      }
+      update_selected_issue_stat(estimated_hours, selected_issues);
     };
 
-    document.body.observe('click', time_counter);
+    document.body.observe('click', recount_time);
   });
 </script>
 
