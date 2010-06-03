@@ -33,7 +33,6 @@
     }
 
     var recount_time = function(event) {
-      console.log(event.target)
       if (event.target == check_all) {
         selected_issues = $$("tr.context-menu-selection").length;
         estimated_hours = 0;
@@ -47,20 +46,19 @@
       else {
         var parents = event.target.ancestors();
         var click_was_on_tr = false;
+        var issue_tr = null;
         for (var i=0; i<parents.length; i++) {
           if(parents[i].hasClassName('hascontextmenu')) {
-            click_was_on_tr = true;
+            issue_tr = parents[i];
             break;
           }
         }
 
-        if (click_was_on_tr) {
-          // if (ctrl || checkbox) {
-          if (event.target.type == 'checkbox') {
+        if (issue_tr) {
+          if (event.target.type == 'checkbox' || event.ctrlKey) {
             // проверяем выделен ли сейчас этот tr
-            var tr = event.target.up().up();
-            var this_est_time = estimated_time_or_null(tr);
-            if (tr.hasClassName('context-menu-selection')) { // значит сняли выделение
+            var this_est_time = estimated_time_or_null(issue_tr);
+            if (issue_tr.hasClassName('context-menu-selection')) { // значит сняли выделение
               estimated_hours -= this_est_time;
               selected_issues--;
             }
@@ -71,7 +69,7 @@
           }
           else { // select current
             selected_issues = 1;
-            estimated_hours = estimated_time_or_null(parents[i]);
+            estimated_hours = estimated_time_or_null(issue_tr);
           }
         }
         else {
