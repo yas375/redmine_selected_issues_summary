@@ -56,13 +56,13 @@
 
         if (issue_tr) {
           if (event.target.type == 'checkbox' || event.ctrlKey) {
-            // проверяем выделен ли сейчас этот tr
+            // check if this tr is checked
             var this_est_time = estimated_time_or_null(issue_tr);
-            if (issue_tr.hasClassName('context-menu-selection')) { // значит сняли выделение
+            if (issue_tr.hasClassName('context-menu-selection')) { // it means uncheck
               estimated_hours -= this_est_time;
               selected_issues--;
             }
-            else { // выделили
+            else { // check
               estimated_hours += this_est_time;
               selected_issues++;
             }
