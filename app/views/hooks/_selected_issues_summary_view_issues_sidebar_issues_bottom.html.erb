@@ -33,6 +33,9 @@
     }
 
     var recount_time = function(event) {
+      if (event.target.tagName == 'A') {
+        return;
+      }
       if (event.target == check_all) {
         selected_issues = $$("tr.context-menu-selection").length;
         estimated_hours = 0;
